@@ -1,0 +1,110 @@
+%%graphing for makeTE_posner4
+function training_crossSessions(TE)
+
+binSize=25;
+
+%calculates binned foreperiod, outcome, total RT, moving+simple RT
+foreperiodBinned=binnedTrials(TE.foreperiod, binSize, 'average');
+outcomeBinned=binnedTrials(TE.trialOutcome, binSize, 'average');
+reactionTime_binned=binnedTrials(TE.reactionTime, binSize, 'average');
+reactionTimeSimple_binned=binnedTrials(TE.reactionTimeSimple, binSize, 'average');
+reactionTimeMoving_binned=binnedTrials(TE.reactionTimeMoving, binSize, 'average');
+
+%%pokeIns
+
+pokeIns=cellfun(@numel, TE.Port2In);
+pokeIns_binned=binnedTrials(pokeIns, binSize, 'average');
+
+%binned session index
+binned_sessionIndex = binnedTrials(TE.sessionIndex, binSize, 'index');
+
+%sessionIndex
+plotforeperiod_sessionIndex=binned_sessionIndex*max(foreperiodBinned);
+plotpokeIn_sessionIndex=binned_sessionIndex*max(pokeIns_binned);
+
+plotTO_sessionIndex=binned_sessionIndex*max(outcomeBinned);
+plotRT_sessionIndex=binned_sessionIndex*max(reactionTime_binned);
+plotRTSimple_sessionIndex=binned_sessionIndex*max(reactionTimeSimple_binned);
+plotRTMoving_sessionIndex=binned_sessionIndex*max(reactionTimeMoving_binned);
+%% plot foreperiod times 
+
+        foreperiodFig = ensureFigure('Foreperiod_plot', 1);
+        foreperiodAxes = axes('Parent', foreperiodFig);
+        % make xData for scatter and stem plots
+        xData = 1:binSize:length(foreperiodBinned)*binSize;
+
+        % gather scatter graphic object handles as numeric values into a
+        % numeric array
+        foreperiodHandles = scatter(xData, smooth(foreperiodBinned)); hold on;
+
+
+        set(foreperiodAxes, 'XLim', [0 max(xData)]);
+        % make legend label axes
+        % use hanles to create a labeled legend
+        legend(foreperiodHandles, 'binned foreperiod', 'Location', 'northwest', 'FontSize', 12); legend('boxoff');
+        title('Foreperiod across sessions (punishment == early withdr.'); ylabel('Foreperiod(s) '); xlabel('binned trial number');     
+
+        stem(xData, plotforeperiod_sessionIndex, 'k', 'marker', 'none')
+        %% plot number pokeIns 
+
+        pokeInsFig = ensureFigure('PokeIns_plot', 1);
+        pokeInsaxes = axes('Parent', pokeInsFig);
+        % make xData for scatter and stem plots
+        xData = 1:binSize:length(pokeIns_binned)*binSize;
+
+        % gather scatter graphic object handles as numeric values into a
+        % numeric array
+        pokeIns_handles = scatter(xData, smooth(pokeIns_binned)); hold on;
+
+
+        set(pokeInsaxes, 'XLim', [0 max(xData)]);
+        % make legend label axes
+        % use hanles to create a labeled legend
+        legend(pokeIns_handles, 'binned poke Ins', 'Location', 'northwest', 'FontSize', 12); legend('boxoff');
+        title('Number of Poke-In Events'); ylabel('# Poke-In '); xlabel('binned trial number');     
+
+        stem(xData, plotpokeIn_sessionIndex, 'k', 'marker', 'none')
+
+
+
+%% plot trial outcomes (correct and incorrect trials)
+
+        outcomeFig = ensureFigure('Outcome_plot', 1);
+        outcomeAxes = axes('Parent', outcomeFig);
+        % make xData for scatter and stem plots
+        xData = 1:binSize:length(outcomeBinned)*binSize;
+
+        % gather scatter graphic object handles as numeric values into a
+        % numeric array
+        outcomeHandles  = scatter(xData, smooth(outcomeBinned)); hold on;
+
+        set(outcomeAxes, 'XLim', [0 max(xData)]);
+        set(outcomeAxes, 'YLim', [0 1]);
+        % make legend label axes
+        % use hanles to create a labeled legend
+        legend(outcomeHandles, 'binned outcomes', 'Location', 'northwest', 'FontSize', 12); legend('boxoff');
+        title('Outcomes across sessions (punishment == early withdr.'); ylabel('Fraction Correct'); xlabel('binned trial number');     
+
+        stem(xData, plotTO_sessionIndex, 'k', 'marker', 'none')
+        %% plot reactionTime
+
+        reactionTimeFig = ensureFigure('reactionTime_plot', 1);
+        reactionTimeAxes = axes('Parent', reactionTimeFig);
+        % make xData for scatter and stem plots
+        xData = 1:binSize:length(reactionTime_binned)*binSize;
+
+        % gather scatter graphic object handles as numeric values into a
+        % numeric array
+
+        reactionTimeHandles=zeros(1,3);
+        reactionTimeHandles (1) = scatter(xData, smooth(reactionTime_binned)); hold on;
+        reactionTimeHandles (2) = scatter(xData, smooth(reactionTimeSimple_binned)); hold on;
+        reactionTimeHandles (3) = scatter(xData, smooth(reactionTimeMoving_binned)); hold on;
+
+        set(reactionTimeAxes, 'XLim', [0 max(xData)]);
+        % make legend label axes
+        % use hanles to create a labeled legend
+        legend(reactionTimeHandles, {'reaction time', 'simple RT', 'moving RT'}, 'Location', 'northwest', 'FontSize', 12); legend('boxoff');
+        title('Reaction time across sessions (excluding early withdr.)'); ylabel('Fraction Correct'); xlabel('binned trial number');     
+
+        stem(xData, plotRT_sessionIndex, 'k', 'marker', 'none')      
