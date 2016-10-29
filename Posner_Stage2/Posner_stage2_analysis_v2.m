@@ -1,12 +1,12 @@
 
 
 %% edit file path and filename
-filepath = '/Users/AJ/Documents/KepecsLab/BeckmanRig3/Data/Posner_2/Posner_Stage2/Session Data';
+filepath = 'Z:\B309_rig2\Data\Posner_1\Posner_Stage2\Session Data';
 cd(filepath);
-filename = 'Posner_2_Posner_Stage2_Oct20_2016_Session1.mat';
+filename = 'Posner_1_Posner_Stage2_Oct26_2016_Session1.mat';
 
 
-%% this section is constant
+% this section is constant
 load(filename);
 figName = filename(1:end-4);
 nTrials = SessionData.nTrials;
@@ -22,7 +22,7 @@ nCorrectTrials = length(correctTrialIndices); % # of correct trials
 
 reactionTimes = NaN(nTrials, 1);% reaction time
 initialSideIn = NaN(nTrials, 1); % 1 or 2 for left and right ports, identity of side port that mouse first pokes into
-
+minRT = 0.15;
 for trial = correctTrialIndices
     % lightOn = light comes on
     lightOn = SessionData.RawEvents.Trial{trial}.States.Reward(1);% light on time for a given trial
@@ -32,7 +32,7 @@ for trial = correctTrialIndices
     if isfield(SessionData.RawEvents.Trial{trial}.Events, 'Port1In')
         timeDiffs1 = SessionData.RawEvents.Trial{trial}.Events.Port1In - lightOn;
 % firstPositive1 could be [] (empty) if there isn't a poke AFTER lightOn        
-        firstPositive1 = timeDiffs1(find(timeDiffs1 > 0, 1));
+        firstPositive1 = timeDiffs1(find(timeDiffs1 > minRT, 1));
         if isempty(firstPositive1)
             firstPositive1 = NaN;
         end
@@ -42,7 +42,7 @@ for trial = correctTrialIndices
     if isfield(SessionData.RawEvents.Trial{trial}.Events, 'Port3In')
         timeDiffs3 = SessionData.RawEvents.Trial{trial}.Events.Port3In - lightOn;
 % firstPositive3 could be [] (empty) if there isn't a poke AFTER lightOn
-        firstPositive3 = timeDiffs3(find(timeDiffs3 > 0, 1));
+        firstPositive3 = timeDiffs3(find(timeDiffs3 > minRT, 1));
         if isempty(firstPositive3)
             firstPositive3 = NaN;
         end  
@@ -71,8 +71,8 @@ for trial = correctTrialIndices
     end     
 end
 
-%%
-nBars = 100;
+%
+nBars = 30;
 h = ensureFigure('Posner_stage2_summary', 1);
 subplot(2,2,1);
 hist(reactionTimes, nBars);
@@ -84,12 +84,14 @@ title(figName, 'Interpreter', 'none');
 leftIndices = find(correctLeftTrials);
 rightIndices = find(correctRightTrials);
 subplot(2,2,2);
-histogram(reactionTimes(leftIndices), nBars, 'FaceColor', 'r');
+
+histogram(reactionTimes(correctLeftTrials), nBars,  'FaceColor', 'r');
 hold on;
-histogram(reactionTimes(rightIndices), nBars, 'FaceColor', 'b');
+histogram(reactionTimes(correctRightTrials), nBars, 'FaceColor', 'b');
 set(gca, 'XLim', [0 5]);
 xlabel('Total Reaction Time (s)');
 title('RTs by reward side Left-r, Right-b');
+
 
 
 sideMatch = initialSideIn == trialTypes';
