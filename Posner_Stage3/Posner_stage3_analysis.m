@@ -1,9 +1,9 @@
 
 
 %% edit file path and filename
-filepath = 'Z:\B309_rig3\Data\Posner_2\Posner_Stage3\Session Data';
+filepath = 'Z:\B309_rig2\Data\Posner_1\Posner_Stage3\Session Data';
 cd(filepath);
-filename = 'Posner_2_Posner_Stage3_Oct28_2016_Session1.mat';
+filename = 'Posner_1_Posner_Stage3_Nov01_2016_Session1.mat';
 
 
 %% this section is constant
