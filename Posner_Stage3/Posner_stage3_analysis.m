@@ -24,6 +24,7 @@ function Posner_stage3_analysis(filename, filepath)
     datafolder = fullfile(filepath, figName);
     ensureDirectory(datafolder);
     cd(datafolder);
+%     cd(filepath);
     nTrials = SessionData.nTrials;
     trialTypes = SessionData.TrialTypes'; % make column vector
     trialOutcomes = SessionData.TrialOutcomes'; % make column vector
@@ -81,12 +82,15 @@ function Posner_stage3_analysis(filename, filepath)
     totalLeft = ismember(trialOutcomes, [0 1 2])  & ismember(trialTypes, [1 3]);
     correctRight = trialOutcomes == 1 & ismember(trialTypes, [2 4]);
     totalRight = ismember(trialOutcomes, [0 1 2])  & ismember(trialTypes, [2 4]);
+    correctBoth = trialOutcomes == 1;
+    totalBoth = ismember(trialOutcomes, [0 1 2]);
 
     winsize = 20; % 20 trial sum
     h = ensureFigure('Posner_stage3_Performance', 1);
-    subplot(2,1,1);
+    subplot(3,1,1);
     plot(movsum(correctLeft, winsize) ./ movsum(totalLeft, winsize), 'g'); hold on;
     plot(movsum(correctRight, winsize) ./ movsum(totalRight, winsize), 'r');
+    plot(movsum(correctBoth, winsize) ./ movsum(totalBoth, winsize), 'b');
     legend({'Left', 'Right'}, 'Box', 'off');
 
     ts = sprintf('Fraction Correct: Total- %0.1f Left- %0.1f Right- %0.1f',...

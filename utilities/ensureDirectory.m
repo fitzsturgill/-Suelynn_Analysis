@@ -4,7 +4,7 @@ function ensureDirectory(fullpath)
 % fullpath = fully specified directory path
 
 
-    subpath = '';
+    subpath = '/';
     while 1
         [fname, fullpath] = strtok(fullpath, filesep);
         subpath = fullfile(subpath, fname);        
@@ -14,6 +14,18 @@ function ensureDirectory(fullpath)
             mkdir(subpath, fname);
         end
     end
+
+%     subpath = '/';
+%     while 1
+%         [fname, fullpath] = strtok(fullpath, filesep);
+%         subpathNew = fullfile(subpath, fname);        
+%         if isempty(fname)
+%             break
+%         elseif ~exist(subpathNew, 'dir')
+%             mkdir(subpathNew, fname);
+%         end
+%         subpath = subpathNew;
+%     end
     
     
         
