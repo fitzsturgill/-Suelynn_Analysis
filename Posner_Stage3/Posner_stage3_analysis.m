@@ -149,8 +149,8 @@ function Posner_stage3_analysis(filename, filepath)
     % subplot(2,2,4);
     % title(['Pcorrect = ' num2str(length(correctTrialIndices) / nTrials)]);
 
-    saveas(h, fullfile(filepath, [figName '.fig']));
-    saveas(h, fullfile(filepath, [figName '.jpg']));
+    saveas(h, fullfile(datafolder, [figName '.fig']));
+    saveas(h, fullfile(datafolder, [figName '.jpg']));
     
     cd('..');
 end
