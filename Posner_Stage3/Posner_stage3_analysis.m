@@ -84,6 +84,7 @@ function Posner_stage3_analysis(filename, filepath)
     totalRight = ismember(trialOutcomes, [0 1 2])  & ismember(trialTypes, [2 4]);
     correctBoth = trialOutcomes == 1;
     totalBoth = ismember(trialOutcomes, [0 1 2]);
+    earlyWithdrawals = trialOutcomes == -1;
 
     winsize = 20; % 20 trial sum
     h = ensureFigure('Posner_stage3_Performance', 1);
@@ -93,10 +94,14 @@ function Posner_stage3_analysis(filename, filepath)
     plot(movsum(correctBoth, winsize) ./ movsum(totalBoth, winsize), 'b');
     legend({'Left', 'Right'}, 'Box', 'off');
 
-    ts = sprintf('Fraction Correct: Total- %0.1f Left- %0.1f Right- %0.1f',...
+    % NaN: future trial (blue), -1: early withdrawal (red circle), 0: incorrect choice (red dot), 1: correct
+% choice (green dot), 2: did not choose (green circle)
+    
+    ts = sprintf('Fraction Correct: Total- %0.1f Left- %0.1f Right- %0.1f, frac. earlyW %0.1f',...
         sum(correctLeft | correctRight)/sum(totalLeft | totalRight),...
         sum(correctLeft)/sum(totalLeft),...
-        sum(correctRight)/sum(totalRight)...
+        sum(correctRight)/sum(totalRight),...
+        sum(earlyWithdrawals)/nTrials...
         );
 
     subplot(2,1,2);
