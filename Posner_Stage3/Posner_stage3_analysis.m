@@ -94,6 +94,18 @@ function Posner_stage3_analysis(filename, filepath)
     plot(movsum(correctBoth, winsize) ./ movsum(totalBoth, winsize), 'b');
     legend({'Left', 'Right'}, 'Box', 'off');
 
+    %% save reaction times, in future: save other variables as well
+    PosnerData = struct();
+    PosnerData.validSimpleRTs = validSimpleRTs;
+    PosnerData.invalidSimpleRTs = invalidSimpleRTs;
+    PosnerData.validMovementTimes = validMovementTimes;
+    PosnerData.invalidMovementTimes = invalidMovementTimes;
+    PosnerData.validTotalRTs = validTotalRTs;
+    PosnerData.invalidTotalRTs = invalidTotalRTs;
+    
+    save(fullfile(datafolder, 'PosnerData.mat'), 'PosnerData');
+    disp(['*** Saving PosnerData in ' datafolder ' ***']);
+    
     % NaN: future trial (blue), -1: early withdrawal (red circle), 0: incorrect choice (red dot), 1: correct
 % choice (green dot), 2: did not choose (green circle)
     
@@ -131,6 +143,7 @@ function Posner_stage3_analysis(filename, filepath)
     subplot(2,2,2);
     plot(validSimpleRTs.sorted, validSimpleRTs.index, 'g'); hold on;
     plot(invalidSimpleRTs.sorted, invalidSimpleRTs.index, 'r');
+    
     % set(gca, 'XLim', [0 5]);
     xlabel('Simple Reaction Time (s)');
     title('RTs, valid (g), invalid (r)');
