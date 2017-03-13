@@ -131,8 +131,8 @@ function Posner_stage3_analysis(filename, filepath)
     mcPortraitFigSetup(h);
     subplot(2,2,1);
     histogram(simpleRTs, nBars, 'FaceColor', 'r'); hold on;
-    histogram(totalRTs, nBars, 'FaceColor', 'b');
-    set(gca, 'XLim', [0 5]);
+%     histogram(totalRTs, nBars, 'FaceColor', 'b');
+    set(gca, 'XLim', [0 1]);
     xlabel('Simple and total reaction times (s)');
     title(figName, 'Interpreter', 'none');
 
