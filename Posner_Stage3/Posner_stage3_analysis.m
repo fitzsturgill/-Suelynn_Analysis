@@ -42,6 +42,7 @@ function Posner_stage3_analysis(filename, filepath)
     simpleRTs = NaN(nTrials, 1);
     movementTimes = NaN(nTrials, 1);
     totalRTs = NaN(nTrials, 1);
+    waitingTime = NaN(nTrials, 1); % time from center poke to either initating a response or to an early withdrawal
 
 
     for trial = correctTrialIndices'
@@ -56,6 +57,8 @@ function Posner_stage3_analysis(filename, filepath)
             if isempty(simpleRT) % firstPositive1 could be [] (empty) if the user cancels while mouse is in the poke (unlikely)     
                 simpleRT = NaN;
             end
+        else
+            disp('wtf');
         end
     % determine total reaction time (simple + movement)
         totalRT = SessionData.RawEvents.Trial{trial}.States.Reward(1) - targetLightOn;
@@ -64,6 +67,21 @@ function Posner_stage3_analysis(filename, filepath)
         movementTimes(trial) = movementTime;
         totalRTs(trial) = totalRT;
     end
+    
+    %% somewhat kludgy, adding on "waiting time" or time spent in center
+    % port (discounting grace periods)
+    
+    for trial =  1:nTrials
+        if isfield(SessionData.RawEvents.Trial{trial}.Events, 'Port2In')
+            timeIn = SessionData.RawEvents.Trial{trial}.Events.Port2In(1);
+            timeOut = max(SessionData.RawEvents.Trial{trial}.States.Punish(1),...
+                SessionData.RawEvents.Trial{trial}.States.Target(1));
+            waitingTime(trial) = timeOut - timeIn; % still need to add on simple reaction time, I'll do that in a sec...
+        end
+    end
+    waitingTime(~isnan(simpleRTs)) = waitingTime(~isnan(simpleRTs)) + simpleRTs(~isnan(simpleRTs));
+                
+        
 
     validSimpleRTs.data = simpleRTs(trialOutcomes == 1 & ismember(trialTypes, [1 2]));
     [validSimpleRTs.sorted validSimpleRTs.index]= cum(validSimpleRTs.data);
@@ -102,6 +120,7 @@ function Posner_stage3_analysis(filename, filepath)
     PosnerData.invalidMovementTimes = invalidMovementTimes;
     PosnerData.validTotalRTs = validTotalRTs;
     PosnerData.invalidTotalRTs = invalidTotalRTs;
+    PosnerData.waitingTime = waitingTime;
     
     save(fullfile(datafolder, 'PosnerData.mat'), 'PosnerData');
     disp(['*** Saving PosnerData in ' datafolder ' ***']);
